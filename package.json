@@ -1,5 +1,6 @@
 {
-  "name": "-vite",
+  "name": "crm-ver2",
+  "homepage": "https://smartyoni.github.io/CRM_Ver2",
   "private": true,
   "version": "0.0.0",
   "type": "module",
