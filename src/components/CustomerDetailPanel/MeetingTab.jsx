@@ -26,8 +26,10 @@ const MeetingTab = ({ customerId, meetings, onSaveMeeting, onDeleteMeeting }) =>
     }
 
     const removeProperty = (index) => {
-        const newProperties = formData.properties.filter((_, i) => i !== index);
-        setFormData({...formData, properties: newProperties});
+        if (confirm('정말 이 매물을 삭제하시겠습니까?')) {
+            const newProperties = formData.properties.filter((_, i) => i !== index);
+            setFormData({...formData, properties: newProperties});
+        }
     }
 
     const handleSubmit = () => {

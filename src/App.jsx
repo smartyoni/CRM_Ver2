@@ -100,9 +100,11 @@ function App() {
   };
 
   const handleDeleteActivity = (activityId) => {
+    if (confirm('정말 이 활동을 삭제하시겠습니까?')) {
       const updatedActivities = activities.filter(a => a.id !== activityId);
       setActivities(updatedActivities);
       saveActivities(updatedActivities);
+    }
   };
 
   const handleSaveMeeting = (meetingData) => {
@@ -118,9 +120,11 @@ function App() {
   };
 
   const handleDeleteMeeting = (meetingId) => {
+    if (confirm('정말 이 미팅을 삭제하시겠습니까?')) {
       const updatedMeetings = meetings.filter(m => m.id !== meetingId);
       setMeetings(updatedMeetings);
       saveMeetings(updatedMeetings);
+    }
   };
 
   const handleBackup = () => {
