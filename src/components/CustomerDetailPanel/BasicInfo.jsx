@@ -25,14 +25,6 @@ const BasicInfo = ({ customer }) => {
             <h4>메모</h4>
             <p>{customer.memo || '-'}</p>
         </div>
-        <style jsx>{`
-            .basic-info-container { padding: 15px; }
-            .info-section { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 5px; }
-            .info-section h4 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-            .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-            .info-grid div span { font-weight: bold; color: #555; display: block; margin-bottom: 4px; font-size: 12px; }
-            .info-grid div p, .info-section > p { margin: 0; }
-        `}</style>
     </div>
   );
 };

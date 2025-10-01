@@ -1,4 +1,3 @@
-
 /* --- Global Resets and Base Styles --- */
 :root {
   --primary-blue: #3498db;
@@ -323,6 +322,23 @@ button {
     resize: vertical;
     min-height: 7.2em;
 }
+
+/* --- Detail Panel Specifics --- */
+.basic-info-container { padding: 15px; }
+.info-section { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 5px; }
+.info-section h4 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.info-grid div span { font-weight: bold; color: #555; display: block; margin-bottom: 4px; font-size: 12px; }
+.info-grid div p, .info-section > p { margin: 0; }
+
+.activity-tab { padding: 15px; }
+.activity-form { border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
+.activity-form div { display: flex; gap: 10px; justify-content: flex-end; }
+.activity-item { background: #f9f9f9; border-left: 3px solid var(--primary-blue); padding: 15px; border-radius: 5px; margin-bottom: 10px; }
+.item-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.item-header span { font-size: 12px; color: var(--danger-red); }
+.item-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+.item-actions button { font-size: 12px; padding: 4px 8px; }
 
 /* --- Responsive Design --- */
 @media (max-width: 1024px) {

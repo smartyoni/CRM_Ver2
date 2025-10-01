@@ -44,6 +44,7 @@ const ActivityTab = ({ customerId, activities, onSaveActivity, onDeleteActivity 
 
   return (
     <div className="activity-tab">
+      {!isAdding && <button onClick={() => setIsAdding(true)}>+ 활동 추가</button>}
       {isAdding && <ActivityForm onCancel={() => setIsAdding(false)} />}
       {customerActivities.map(activity => (
         editingActivity?.id === activity.id ? (
@@ -62,16 +63,6 @@ const ActivityTab = ({ customerId, activities, onSaveActivity, onDeleteActivity 
             </div>
         )
       ))}
-       <style jsx>{`
-            .activity-tab { padding: 15px; }
-            .activity-form { border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-            .activity-form div { display: flex; gap: 10px; justify-content: flex-end; }
-            .activity-item { background: #f9f9f9; border-left: 3px solid var(--primary-blue); padding: 15px; border-radius: 5px; margin-bottom: 10px; }
-            .item-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-            .item-header span { font-size: 12px; color: var(--danger-red); }
-            .item-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-            .item-actions button { font-size: 12px; padding: 4px 8px; }
-        `}</style>
     </div>
   );
 };
