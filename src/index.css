@@ -1,3 +1,4 @@
+
 /* --- Global Resets and Base Styles --- */
 :root {
   --primary-blue: #3498db;
@@ -339,6 +340,18 @@ button {
 .item-header span { font-size: 12px; color: var(--danger-red); }
 .item-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
 .item-actions button { font-size: 12px; padding: 4px 8px; }
+
+/* --- Meeting Tab Specifics --- */
+.meeting-form { border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
+.property-form-item { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.meeting-item { background: #f9f9f9; border: 1px solid #eee; padding: 15px; border-radius: 5px; margin-bottom: 10px; }
+.property-item { border-left: 3px solid; padding: 10px; margin-top: 10px; }
+.property-item.status-확인전 { border-color: #f8d7da; background: #f8d7da20; }
+.property-item.status-확인중 { border-color: #fff3cd; background: #fff3cd20; }
+.property-item.status-볼수있음 { border-color: #d4edda; background: #d4edda20; }
+.property-item.status-오늘못봄 { border-color: #d1ecf1; background: #d1ecf120; }
+.property-item.status-계약됨 { border-color: #e2e3e5; background: #e2e3e520; }
 
 /* --- Responsive Design --- */
 @media (max-width: 1024px) {

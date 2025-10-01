@@ -105,6 +105,24 @@ function App() {
       saveActivities(updatedActivities);
   };
 
+  const handleSaveMeeting = (meetingData) => {
+      const newMeetings = [...meetings];
+      const index = newMeetings.findIndex(m => m.id === meetingData.id);
+      if (index > -1) {
+          newMeetings[index] = meetingData;
+      } else {
+          newMeetings.push(meetingData);
+      }
+      setMeetings(newMeetings);
+      saveMeetings(newMeetings);
+  };
+
+  const handleDeleteMeeting = (meetingId) => {
+      const updatedMeetings = meetings.filter(m => m.id !== meetingId);
+      setMeetings(updatedMeetings);
+      saveMeetings(updatedMeetings);
+  };
+
   const handleBackup = () => {
     const backupData = {
         customers,
@@ -189,6 +207,9 @@ function App() {
         activities={activities}
         onSaveActivity={handleSaveActivity}
         onDeleteActivity={handleDeleteActivity}
+        meetings={meetings}
+        onSaveMeeting={handleSaveMeeting}
+        onDeleteMeeting={handleDeleteMeeting}
       />
 
       <CustomerModal 

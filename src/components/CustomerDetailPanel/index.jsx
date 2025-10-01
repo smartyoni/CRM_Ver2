@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import BasicInfo from './BasicInfo';
 import ActivityTab from './ActivityTab';
-// import MeetingTab from './MeetingTab'; // To be added later
+import MeetingTab from './MeetingTab';
 
 const CustomerDetailPanel = ({ 
     selectedCustomer, 
@@ -9,7 +9,10 @@ const CustomerDetailPanel = ({
     onEditCustomer,
     activities,
     onSaveActivity,
-    onDeleteActivity
+    onDeleteActivity,
+    meetings,
+    onSaveMeeting,
+    onDeleteMeeting
 }) => {
   const [activeTab, setActiveTab] = useState('기본정보');
 
@@ -33,7 +36,7 @@ const CustomerDetailPanel = ({
             <div className="tab-nav">
               <div onClick={() => setActiveTab('기본정보')} className={`tab-item ${activeTab === '기본정보' ? 'active' : ''}`}>기본정보</div>
               <div onClick={() => setActiveTab('활동 내역')} className={`tab-item ${activeTab === '활동 내역' ? 'active' : ''}`}>활동 내역 +</div>
-              {/* <div onClick={() => setActiveTab('미팅 내역')} className={`tab-item ${activeTab === '미팅 내역' ? 'active' : ''}`}>미팅 내역 +</div> */}
+              <div onClick={() => setActiveTab('미팅 내역')} className={`tab-item ${activeTab === '미팅 내역' ? 'active' : ''}`}>미팅 내역 +</div>
             </div>
             <div className="tab-content">
               {activeTab === '기본정보' && <BasicInfo customer={selectedCustomer} />}
@@ -44,7 +47,13 @@ const CustomerDetailPanel = ({
                     onSaveActivity={onSaveActivity}
                     onDeleteActivity={onDeleteActivity}
                 />}
-              {/* {activeTab === '미팅 내역' && <p>Meetings coming soon...</p>} */}
+              {activeTab === '미팅 내역' && 
+                <MeetingTab 
+                    customerId={selectedCustomer.id}
+                    meetings={meetings}
+                    onSaveMeeting={onSaveMeeting}
+                    onDeleteMeeting={onDeleteMeeting}
+                />}
             </div>
           </div>
         </>
