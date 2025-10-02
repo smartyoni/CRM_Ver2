@@ -3,7 +3,17 @@ import FilterSidebar from './components/FilterSidebar';
 import CustomerTable from './components/CustomerTable';
 import CustomerModal from './components/CustomerModal';
 import CustomerDetailPanel from './components/CustomerDetailPanel';
-import { getCustomers, saveCustomers, getActivities, saveActivities, getMeetings, saveMeetings } from './utils/storage';
+import {
+  subscribeToCustomers,
+  subscribeToActivities,
+  subscribeToMeetings,
+  saveCustomer,
+  deleteCustomer,
+  saveActivity,
+  deleteActivity,
+  saveMeeting,
+  deleteMeeting
+} from './utils/storage';
 
 // Mock data for initial setup
 const initialCustomers = [
@@ -37,15 +47,25 @@ function App() {
   const restoreInputRef = useRef(null);
 
   useEffect(() => {
-    const storedCustomers = getCustomers();
-    if (storedCustomers.length === 0) {
-        setCustomers(initialCustomers);
-        saveCustomers(initialCustomers);
-    } else {
-        setCustomers(storedCustomers);
-    }
-    setActivities(getActivities());
-    setMeetings(getMeetings());
+    // Realtime subscriptions for Firestore
+    const unsubscribeCustomers = subscribeToCustomers((customers) => {
+      setCustomers(customers);
+    });
+
+    const unsubscribeActivities = subscribeToActivities((activities) => {
+      setActivities(activities);
+    });
+
+    const unsubscribeMeetings = subscribeToMeetings((meetings) => {
+      setMeetings(meetings);
+    });
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      unsubscribeCustomers();
+      unsubscribeActivities();
+      unsubscribeMeetings();
+    };
   }, []);
 
   const handleFilterChange = (filter) => {
@@ -71,66 +91,37 @@ function App() {
       setEditingCustomer(null);
   };
 
-  const handleSaveCustomer = (customerData) => {
-    const newCustomers = [...customers];
-    const index = newCustomers.findIndex(c => c.id === customerData.id);
-    if (index > -1) {
-        newCustomers[index] = customerData;
-    } else {
-        newCustomers.push(customerData);
-    }
-    setCustomers(newCustomers);
-    saveCustomers(newCustomers);
+  const handleSaveCustomer = async (customerData) => {
+    await saveCustomer(customerData);
+    // Firestore 실시간 구독이 자동으로 state 업데이트
   };
 
-  const handleDeleteCustomer = (customer) => {
+  const handleDeleteCustomer = async (customer) => {
     if (confirm(`"${customer.name}" 고객을 정말 삭제하시겠습니까?`)) {
-      const updatedCustomers = customers.filter(c => c.id !== customer.id);
-      setCustomers(updatedCustomers);
-      saveCustomers(updatedCustomers);
+      await deleteCustomer(customer.id);
       if (selectedCustomerId === customer.id) {
-          setSelectedCustomerId(null);
+        setSelectedCustomerId(null);
       }
     }
   };
 
-  const handleSaveActivity = (activityData) => {
-      const newActivities = [...activities];
-      const index = newActivities.findIndex(a => a.id === activityData.id);
-      if (index > -1) {
-          newActivities[index] = activityData;
-      } else {
-          newActivities.push(activityData);
-      }
-      setActivities(newActivities);
-      saveActivities(newActivities);
+  const handleSaveActivity = async (activityData) => {
+    await saveActivity(activityData);
   };
 
-  const handleDeleteActivity = (activityId) => {
+  const handleDeleteActivity = async (activityId) => {
     if (confirm('정말 이 활동을 삭제하시겠습니까?')) {
-      const updatedActivities = activities.filter(a => a.id !== activityId);
-      setActivities(updatedActivities);
-      saveActivities(updatedActivities);
+      await deleteActivity(activityId);
     }
   };
 
-  const handleSaveMeeting = (meetingData) => {
-      const newMeetings = [...meetings];
-      const index = newMeetings.findIndex(m => m.id === meetingData.id);
-      if (index > -1) {
-          newMeetings[index] = meetingData;
-      } else {
-          newMeetings.push(meetingData);
-      }
-      setMeetings(newMeetings);
-      saveMeetings(newMeetings);
+  const handleSaveMeeting = async (meetingData) => {
+    await saveMeeting(meetingData);
   };
 
-  const handleDeleteMeeting = (meetingId) => {
+  const handleDeleteMeeting = async (meetingId) => {
     if (confirm('정말 이 미팅을 삭제하시겠습니까?')) {
-      const updatedMeetings = meetings.filter(m => m.id !== meetingId);
-      setMeetings(updatedMeetings);
-      saveMeetings(updatedMeetings);
+      await deleteMeeting(meetingId);
     }
   };
 
@@ -151,29 +142,30 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
-  const handleRestore = (event) => {
+  const handleRestore = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (data && Array.isArray(data.customers) && Array.isArray(data.activities)) {
-                saveCustomers(data.customers || []);
-                saveActivities(data.activities || []);
-                saveMeetings(data.meetings || []);
-                alert('데이터가 성공적으로 복원되었습니다. 페이지를 새로고침합니다.');
-                window.location.reload();
-            } else {
-                throw new Error('잘못된 파일 형식입니다.');
-            }
-        } catch (error) {
-            alert(`복원 실패: ${error.message}`);
+    reader.onload = async (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (data && Array.isArray(data.customers) && Array.isArray(data.activities)) {
+          // Firestore에 각 문서 저장
+          const { saveCustomers, saveActivities, saveMeetings } = await import('./utils/storage');
+          await saveCustomers(data.customers || []);
+          await saveActivities(data.activities || []);
+          await saveMeetings(data.meetings || []);
+          alert('데이터가 성공적으로 복원되었습니다.');
+        } else {
+          throw new Error('잘못된 파일 형식입니다.');
         }
+      } catch (error) {
+        alert(`복원 실패: ${error.message}`);
+      }
     };
     reader.readAsText(file);
-    event.target.value = null; // Reset file input
+    event.target.value = null;
   };
 
   const filteredCustomers = customers.filter(customer => {
