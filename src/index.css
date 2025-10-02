@@ -450,6 +450,52 @@ button {
   color: #555;
 }
 
+/* --- Progress Tabs --- */
+.progress-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.progress-tab {
+  padding: 8px 16px;
+  border: 1px solid var(--medium-gray);
+  background: white;
+  border-radius: 20px;
+  font-size: 14px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.progress-tab:hover {
+  background: var(--light-gray);
+}
+
+.progress-tab.active {
+  font-weight: bold;
+  color: white;
+}
+
+.progress-tab.active:not(.progress-매물제안중):not(.progress-미팅일확정):not(.progress-오늘미팅) {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.progress-tab.progress-매물제안중.active {
+  background: #9b59b6;
+  border-color: #9b59b6;
+}
+
+.progress-tab.progress-미팅일확정.active {
+  background: #f39c12;
+  border-color: #f39c12;
+}
+
+.progress-tab.progress-오늘미팅.active {
+  background: #e74c3c;
+  border-color: #e74c3c;
+}
+
 /* --- Responsive Design --- */
 @media (max-width: 1024px) {
   .filter-sidebar {

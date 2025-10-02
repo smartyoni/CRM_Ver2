@@ -32,6 +32,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [activeFilter, setActiveFilter] = useState('전체');
+  const [activeProgressFilter, setActiveProgressFilter] = useState(null);
   const restoreInputRef = useRef(null);
 
   useEffect(() => {
@@ -48,6 +49,11 @@ function App() {
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
+    setActiveProgressFilter(null); // 상태 변경 시 진행상황 필터 초기화
+  };
+
+  const handleProgressFilterChange = (progress) => {
+    setActiveProgressFilter(progress);
   };
 
   const handleSelectCustomer = (customer) => {
@@ -169,9 +175,11 @@ function App() {
     event.target.value = null; // Reset file input
   };
 
-  const filteredCustomers = customers.filter(customer => 
-    activeFilter === '전체' || customer.status === activeFilter
-  );
+  const filteredCustomers = customers.filter(customer => {
+    const statusMatch = activeFilter === '전체' || customer.status === activeFilter;
+    const progressMatch = !activeProgressFilter || customer.progress === activeProgressFilter;
+    return statusMatch && progressMatch;
+  });
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
 
@@ -194,12 +202,16 @@ function App() {
           </div>
         </header>
         <main className="table-container">
-          <CustomerTable 
+          <CustomerTable
             customers={filteredCustomers}
             onSelectCustomer={handleSelectCustomer}
             onEdit={handleOpenModal}
             onDelete={handleDeleteCustomer}
             selectedCustomerId={selectedCustomerId}
+            activeFilter={activeFilter}
+            activeProgressFilter={activeProgressFilter}
+            onProgressFilterChange={handleProgressFilterChange}
+            allCustomers={customers}
           />
         </main>
       </div>

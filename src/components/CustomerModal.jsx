@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SOURCES, PROPERTY_TYPES } from '../constants';
+import { SOURCES, PROPERTY_TYPES, STATUSES, PROGRESS_STATUSES } from '../constants';
 import { validateCustomer } from '../utils/validation';
 import { generateId } from '../utils/helpers';
 
@@ -15,7 +15,8 @@ const CustomerModal = ({ isOpen, onClose, onSave, editData }) => {
     hopefulMonthlyRent: editData?.hopefulMonthlyRent || '',
     moveInDate: editData?.moveInDate || '',
     memo: editData?.memo || '',
-    status: editData?.status || '신규',
+    status: editData?.status || STATUSES[0],
+    progress: editData?.progress || null,
     createdAt: editData?.createdAt || new Date().toISOString(),
   });
 
@@ -29,7 +30,14 @@ const CustomerModal = ({ isOpen, onClose, onSave, editData }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const updates = { [name]: value };
+
+    // 상태가 계약완료 또는 포기로 변경되면 진행상황을 null로
+    if (name === 'status' && (value === '계약완료' || value === '포기')) {
+      updates.progress = null;
+    }
+
+    setFormData(prev => ({ ...prev, ...updates }));
   };
 
   const handlePhoneChange = (e) => {
@@ -72,6 +80,19 @@ const CustomerModal = ({ isOpen, onClose, onSave, editData }) => {
                 <label>매물종류</label>
                 <select name="propertyType" value={formData.propertyType} onChange={handleChange}>{PROPERTY_TYPES.map(p => <option key={p} value={p}>{p}</option>)}</select>
             </div>
+            <div className="form-group">
+                <label>상태</label>
+                <select name="status" value={formData.status} onChange={handleChange}>{STATUSES.map(s => <option key={s} value={s}>{s}</option>)}</select>
+            </div>
+            {(formData.status === '신규' || formData.status === '진행중') && (
+              <div className="form-group">
+                  <label>진행상황</label>
+                  <select name="progress" value={formData.progress || ''} onChange={handleChange}>
+                    <option value="">선택 안 함</option>
+                    {PROGRESS_STATUSES.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+              </div>
+            )}
         </div>
         <div className="form-group">
             <label>고객명 *</label>
