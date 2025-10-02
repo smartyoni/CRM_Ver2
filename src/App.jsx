@@ -172,11 +172,154 @@ function App() {
     event.target.value = null;
   };
 
-  const filteredCustomers = customers.filter(customer => {
-    const statusMatch = activeFilter === '전체' || customer.status === activeFilter;
-    const progressMatch = !activeProgressFilter || customer.progress === activeProgressFilter;
-    return statusMatch && progressMatch;
-  });
+  const getLastActivityDate = (customerId) => {
+    const customerActivities = activities.filter(a => a.customerId === customerId);
+    if (customerActivities.length === 0) return null;
+    const sorted = customerActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return new Date(sorted[0].date);
+  };
+
+  const getDaysDiff = (date1, date2) => {
+    const diff = Math.abs(date1 - date2);
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  };
+
+  const filteredCustomers = (() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let filtered = customers.filter(customer => {
+      // 오늘미팅 필터
+      if (activeFilter === '오늘미팅') {
+        const customerMeetings = meetings.filter(m => m.customerId === customer.id);
+        return customerMeetings.some(m => {
+          const meetingDate = new Date(m.date);
+          meetingDate.setHours(0, 0, 0, 0);
+          return meetingDate.getTime() === today.getTime();
+        });
+      }
+
+      // 미팅일확정 필터
+      if (activeFilter === '미팅일확정') {
+        const customerMeetings = meetings.filter(m => m.customerId === customer.id);
+        return customerMeetings.some(m => {
+          const meetingDate = new Date(m.date);
+          meetingDate.setHours(0, 0, 0, 0);
+          return meetingDate > today;
+        });
+      }
+
+      // 오늘접촉 필터
+      if (activeFilter === '오늘접촉') {
+        const lastActivity = getLastActivityDate(customer.id);
+        if (!lastActivity) return false;
+        const activityDate = new Date(lastActivity);
+        activityDate.setHours(0, 0, 0, 0);
+        return activityDate.getTime() === today.getTime();
+      }
+
+      // 연락할고객 필터 (2일 이상 미접촉)
+      if (activeFilter === '연락할고객') {
+        const lastActivity = getLastActivityDate(customer.id);
+        if (!lastActivity) return false;
+        return getDaysDiff(today, lastActivity) >= 2;
+      }
+
+      // 일주일무접촉 필터
+      if (activeFilter === '일주일무접촉') {
+        const lastActivity = getLastActivityDate(customer.id);
+        if (!lastActivity) return false;
+        return getDaysDiff(today, lastActivity) >= 7;
+      }
+
+      // 신규무접촉 필터
+      if (activeFilter === '신규무접촉') {
+        return customer.status === '신규' && activities.filter(a => a.customerId === customer.id).length === 0;
+      }
+
+      // 진행중무접촉 필터 (3일 이상 활동 없음)
+      if (activeFilter === '진행중무접촉') {
+        if (customer.status !== '진행중') return false;
+        const lastActivity = getLastActivityDate(customer.id);
+        if (!lastActivity) return true;
+        return getDaysDiff(today, lastActivity) >= 3;
+      }
+
+      // 기존 상태 필터
+      const statusMatch = activeFilter === '전체' || customer.status === activeFilter;
+      const progressMatch = !activeProgressFilter || customer.progress === activeProgressFilter;
+      return statusMatch && progressMatch;
+    });
+
+    // 정렬 로직
+    if (activeFilter === '오늘미팅') {
+      // 오늘미팅 필터: 오늘 미팅 시간순 정렬
+      filtered.sort((a, b) => {
+        const aMeetings = meetings.filter(m => {
+          const meetingDate = new Date(m.date);
+          meetingDate.setHours(0, 0, 0, 0);
+          return m.customerId === a.id && meetingDate.getTime() === today.getTime();
+        });
+        const bMeetings = meetings.filter(m => {
+          const meetingDate = new Date(m.date);
+          meetingDate.setHours(0, 0, 0, 0);
+          return m.customerId === b.id && meetingDate.getTime() === today.getTime();
+        });
+
+        if (aMeetings.length === 0) return 1;
+        if (bMeetings.length === 0) return -1;
+
+        const aTime = new Date(aMeetings[0].date).getTime();
+        const bTime = new Date(bMeetings[0].date).getTime();
+        return aTime - bTime;
+      });
+    } else if (activeFilter === '미팅일확정') {
+      // 미팅일확정 필터: 가장 가까운 미팅 날짜순 정렬
+      filtered.sort((a, b) => {
+        const aMeetings = meetings.filter(m => {
+          const meetingDate = new Date(m.date);
+          meetingDate.setHours(0, 0, 0, 0);
+          return m.customerId === a.id && meetingDate > today;
+        });
+        const bMeetings = meetings.filter(m => {
+          const meetingDate = new Date(m.date);
+          meetingDate.setHours(0, 0, 0, 0);
+          return m.customerId === b.id && meetingDate > today;
+        });
+
+        if (aMeetings.length === 0) return 1;
+        if (bMeetings.length === 0) return -1;
+
+        const aNextMeeting = aMeetings.sort((m1, m2) => new Date(m1.date) - new Date(m2.date))[0];
+        const bNextMeeting = bMeetings.sort((m1, m2) => new Date(m1.date) - new Date(m2.date))[0];
+
+        return new Date(aNextMeeting.date) - new Date(bNextMeeting.date);
+      });
+    } else if (activeFilter === '오늘접촉') {
+      // 오늘접촉 필터: 최근 활동시간순 정렬
+      filtered.sort((a, b) => {
+        const aLastActivity = getLastActivityDate(a.id);
+        const bLastActivity = getLastActivityDate(b.id);
+        if (!aLastActivity) return 1;
+        if (!bLastActivity) return -1;
+        return bLastActivity - aLastActivity;
+      });
+    } else if (activeFilter === '연락할고객' || activeFilter === '일주일무접촉' || activeFilter === '진행중무접촉') {
+      // 미접촉 필터들: 마지막 활동일이 오래된 순 정렬
+      filtered.sort((a, b) => {
+        const aLastActivity = getLastActivityDate(a.id);
+        const bLastActivity = getLastActivityDate(b.id);
+        if (!aLastActivity) return 1;
+        if (!bLastActivity) return -1;
+        return aLastActivity - bLastActivity;
+      });
+    } else if (activeFilter === '신규무접촉') {
+      // 신규무접촉 필터: 고객 등록일순 정렬
+      filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+
+    return filtered;
+  })();
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
 
@@ -191,6 +334,8 @@ function App() {
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
         customers={customers}
+        meetings={meetings}
+        activities={activities}
         isMobileOpen={isMobileSidebarOpen}
         onMobileClose={() => setIsMobileSidebarOpen(false)}
       />
