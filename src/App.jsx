@@ -33,6 +33,7 @@ function App() {
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [activeFilter, setActiveFilter] = useState('전체');
   const [activeProgressFilter, setActiveProgressFilter] = useState(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const restoreInputRef = useRef(null);
 
   useEffect(() => {
@@ -185,14 +186,24 @@ function App() {
 
   return (
     <div className="app-container">
-      <FilterSidebar 
-        activeFilter={activeFilter} 
-        onFilterChange={handleFilterChange} 
-        customers={customers} 
+      {/* 모바일 오버레이 배경 */}
+      {isMobileSidebarOpen && (
+        <div className="mobile-overlay" onClick={() => setIsMobileSidebarOpen(false)} />
+      )}
+
+      <FilterSidebar
+        activeFilter={activeFilter}
+        onFilterChange={handleFilterChange}
+        customers={customers}
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileClose={() => setIsMobileSidebarOpen(false)}
       />
-      
+
       <div className="main-content">
         <header className="main-header">
+          <button className="hamburger-btn" onClick={() => setIsMobileSidebarOpen(true)}>
+            ☰
+          </button>
           <h1>고객 목록</h1>
           <div className="header-actions">
             <button onClick={() => handleOpenModal()} className="btn-primary">+ 고객 추가</button>
