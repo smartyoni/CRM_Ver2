@@ -219,10 +219,11 @@ function App() {
         </main>
       </div>
 
-      <CustomerDetailPanel 
+      <CustomerDetailPanel
         selectedCustomer={selectedCustomer}
         onClose={() => setSelectedCustomerId(null)}
         onEditCustomer={handleOpenModal}
+        onDeleteCustomer={handleDeleteCustomer}
         activities={activities}
         onSaveActivity={handleSaveActivity}
         onDeleteActivity={handleDeleteActivity}

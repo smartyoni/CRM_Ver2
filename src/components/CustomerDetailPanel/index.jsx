@@ -3,10 +3,11 @@ import BasicInfo from './BasicInfo';
 import ActivityTab from './ActivityTab';
 import MeetingTab from './MeetingTab';
 
-const CustomerDetailPanel = ({ 
-    selectedCustomer, 
-    onClose, 
+const CustomerDetailPanel = ({
+    selectedCustomer,
+    onClose,
     onEditCustomer,
+    onDeleteCustomer,
     activities,
     onSaveActivity,
     onDeleteActivity,
@@ -27,8 +28,27 @@ const CustomerDetailPanel = ({
                 <h3>고객 상세</h3>
                 <span className="created-date">접수일자: {new Date(selectedCustomer.createdAt).toLocaleDateString()}</span>
             </div>
-            <div>
-                <button onClick={() => onEditCustomer(selectedCustomer)} className="btn-primary">수정</button>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditCustomer(selectedCustomer);
+                  }}
+                  className="btn-primary"
+                  style={{ padding: '8px 16px' }}
+                >
+                  수정
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteCustomer(selectedCustomer);
+                  }}
+                  className="btn-secondary"
+                  style={{ padding: '8px 16px' }}
+                >
+                  삭제
+                </button>
                 <button onClick={onClose} className="btn-close">✕</button>
             </div>
           </div>
