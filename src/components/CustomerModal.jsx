@@ -71,6 +71,10 @@ const CustomerModal = ({ isOpen, onClose, onSave, editData }) => {
           <h3>{editData ? '고객 수정' : '고객 추가'}</h3>
           <button onClick={onClose} className="btn-close">✕</button>
         </div>
+        <div className="form-group">
+            <label>고객명 *</label>
+            <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="고객 이름 입력" required />
+        </div>
         <div className="form-grid">
             <div className="form-group">
                 <label>경로</label>
@@ -93,10 +97,6 @@ const CustomerModal = ({ isOpen, onClose, onSave, editData }) => {
                   </select>
               </div>
             )}
-        </div>
-        <div className="form-group">
-            <label>고객명 *</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="고객 이름 입력" required />
         </div>
         <div className="form-grid">
             <div className="form-group">
