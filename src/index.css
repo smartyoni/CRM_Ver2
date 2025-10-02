@@ -476,9 +476,14 @@ button {
   color: white;
 }
 
-.progress-tab.active:not(.progress-매물제안중):not(.progress-미팅일확정):not(.progress-오늘미팅) {
+.progress-tab.active:not(.progress-매물제안예정):not(.progress-매물제안중):not(.progress-미팅일확정):not(.progress-오늘미팅):not(.progress-접수후대기중) {
   background: var(--primary-blue);
   border-color: var(--primary-blue);
+}
+
+.progress-tab.progress-매물제안예정.active {
+  background: #16a085;
+  border-color: #16a085;
 }
 
 .progress-tab.progress-매물제안중.active {
@@ -494,6 +499,11 @@ button {
 .progress-tab.progress-오늘미팅.active {
   background: #e74c3c;
   border-color: #e74c3c;
+}
+
+.progress-tab.progress-접수후대기중.active {
+  background: #95a5a6;
+  border-color: #95a5a6;
 }
 
 /* --- Responsive Design --- */
