@@ -30,13 +30,32 @@ const ActivityTab = ({ customerId, activities, onSaveActivity, onDeleteActivity 
     };
 
     return (
-      <div className="activity-form">
-        <select name="type" value={formData.type} onChange={handleChange}>{ACTIVITY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}</select>
-        <input type="datetime-local" name="date" value={formData.date} onChange={handleChange} />
-        <textarea name="content" value={formData.content} onChange={handleChange} placeholder="활동 내용"></textarea>
-        <div>
+      <div className="modal-overlay" onClick={onCancel}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h3>활동 추가 - 여의도근무 여성분(렌코양창룸방)</h3>
+            <button className="btn-close" onClick={onCancel}>×</button>
+          </div>
+          <div className="form-grid">
+            <div className="form-group">
+              <label>활동 유형 *</label>
+              <select name="type" value={formData.type} onChange={handleChange}>
+                {ACTIVITY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>활동일시 *</label>
+              <input type="datetime-local" name="date" value={formData.date} onChange={handleChange} />
+            </div>
+            <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+              <label>활동 내용 *</label>
+              <textarea name="content" value={formData.content} onChange={handleChange} placeholder="활동 내용을 입력하세요"></textarea>
+            </div>
+          </div>
+          <div className="modal-footer">
             <button onClick={onCancel} className="btn-secondary">취소</button>
             <button onClick={handleSubmit} className="btn-primary">저장</button>
+          </div>
         </div>
       </div>
     );

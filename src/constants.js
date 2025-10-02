@@ -2,5 +2,5 @@
 export const SOURCES = ['네이버광고', '블로그', '워킹', '지인소개', '기존고객', '불명'];
 export const PROPERTY_TYPES = ['매매', '월세', '전세', '상가', '사무실', '지식산업센터', '아파트'];
 export const STATUSES = ['신규', '상담중', '계약완료', '거래중단'];
-export const ACTIVITY_TYPES = ['전화상담', '문자', '방문', '이메일', '기타'];
+export const ACTIVITY_TYPES = ['전화상담', '문자/카톡', '매물제안', '워킹상담', '현장안내', '미팅진행', '기타'];
 export const PROPERTY_STATUSES = ['확인전', '확인중', '볼수있음', '오늘못봄', '계약됨'];
