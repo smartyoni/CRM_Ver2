@@ -34,30 +34,36 @@ const ActivityTab = ({ customerId, activities, onSaveActivity, onDeleteActivity 
 
   const ActivityViewModal = ({ activity, onClose }) => {
     const [followUps, setFollowUps] = useState(activity.followUps || []);
-    const [isAddingFollowUp, setIsAddingFollowUp] = useState(false);
     const [editingFollowUpId, setEditingFollowUpId] = useState(null);
-    const [newFollowUp, setNewFollowUp] = useState({ date: new Date().toISOString().slice(0, 16), content: '' });
+    const [newFollowUpContent, setNewFollowUpContent] = useState('');
 
     const handleAddFollowUp = () => {
+      if (!newFollowUpContent.trim()) return;
+
       const followUp = {
         id: generateId(),
-        date: newFollowUp.date,
-        content: newFollowUp.content,
+        date: new Date().toISOString(),
+        content: newFollowUpContent,
         createdAt: new Date().toISOString()
       };
       const updatedFollowUps = [...followUps, followUp];
       const updatedActivity = { ...activity, followUps: updatedFollowUps };
-      onSaveActivity(updatedActivity);
+      handleSave(updatedActivity);
       setFollowUps(updatedFollowUps);
-      setNewFollowUp({ date: new Date().toISOString().slice(0, 16), content: '' });
-      setIsAddingFollowUp(false);
+      setNewFollowUpContent('');
+    };
+
+    const handleKeyPress = (e) => {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        handleAddFollowUp();
+      }
     };
 
     const handleDeleteFollowUp = (followUpId) => {
       if (confirm('이 후속 기록을 삭제하시겠습니까?')) {
         const updatedFollowUps = followUps.filter(f => f.id !== followUpId);
         const updatedActivity = { ...activity, followUps: updatedFollowUps };
-        onSaveActivity(updatedActivity);
+        handleSave(updatedActivity);
         setFollowUps(updatedFollowUps);
       }
     };
@@ -67,7 +73,7 @@ const ActivityTab = ({ customerId, activities, onSaveActivity, onDeleteActivity 
         f.id === followUpId ? { ...f, content: updatedContent } : f
       );
       const updatedActivity = { ...activity, followUps: updatedFollowUps };
-      onSaveActivity(updatedActivity);
+      handleSave(updatedActivity);
       setFollowUps(updatedFollowUps);
       setEditingFollowUpId(null);
     };
@@ -96,41 +102,32 @@ const ActivityTab = ({ customerId, activities, onSaveActivity, onDeleteActivity 
             </div>
 
             <div style={{ borderTop: '2px solid #e0e0e0', paddingTop: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <div style={{ marginBottom: '15px' }}>
                 <strong style={{ color: '#7f8c8d', fontSize: '14px' }}>📝 후속 기록 ({followUps.length})</strong>
-                {!isAddingFollowUp && (
-                  <button onClick={() => setIsAddingFollowUp(true)} className="btn-primary" style={{ fontSize: '12px', padding: '6px 12px' }}>
-                    + 후속 기록 추가
-                  </button>
-                )}
               </div>
 
-              {isAddingFollowUp && (
-                <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '5px', marginBottom: '15px' }}>
-                  <div style={{ marginBottom: '10px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', marginBottom: '5px', color: '#555' }}>날짜/시간</label>
-                    <input
-                      type="datetime-local"
-                      value={newFollowUp.date}
-                      onChange={(e) => setNewFollowUp({...newFollowUp, date: e.target.value})}
-                      style={{ width: '100%', padding: '8px' }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '10px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', marginBottom: '5px', color: '#555' }}>내용</label>
-                    <textarea
-                      value={newFollowUp.content}
-                      onChange={(e) => setNewFollowUp({...newFollowUp, content: e.target.value})}
-                      placeholder="후속 기록 내용을 입력하세요"
-                      style={{ width: '100%', padding: '8px', minHeight: '80px' }}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                    <button onClick={() => setIsAddingFollowUp(false)} className="btn-secondary" style={{ fontSize: '12px', padding: '6px 12px' }}>취소</button>
-                    <button onClick={handleAddFollowUp} className="btn-primary" style={{ fontSize: '12px', padding: '6px 12px' }}>저장</button>
-                  </div>
+              <div style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: '5px', padding: '10px', marginBottom: '15px' }}>
+                <textarea
+                  value={newFollowUpContent}
+                  onChange={(e) => setNewFollowUpContent(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  placeholder="후속 기록을 입력하세요... (Ctrl+Enter로 입력)"
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    minHeight: '60px',
+                    border: 'none',
+                    outline: 'none',
+                    resize: 'vertical',
+                    fontFamily: 'inherit'
+                  }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                  <button onClick={handleAddFollowUp} className="btn-primary" style={{ fontSize: '12px', padding: '6px 16px' }}>
+                    입력
+                  </button>
                 </div>
-              )}
+              </div>
 
               {sortedFollowUps.length > 0 ? (
                 sortedFollowUps.map(followUp => (
@@ -227,6 +224,11 @@ const ActivityTab = ({ customerId, activities, onSaveActivity, onDeleteActivity 
     );
   };
 
+  // viewingActivity가 변경되었을 때 최신 데이터로 업데이트
+  const currentViewingActivity = viewingActivity
+    ? customerActivities.find(a => a.id === viewingActivity.id)
+    : null;
+
   return (
     <div className="activity-tab">
       {!isAdding && !editingActivity && <button onClick={() => setIsAdding(true)}>+ 활동 추가</button>}
@@ -289,7 +291,7 @@ const ActivityTab = ({ customerId, activities, onSaveActivity, onDeleteActivity 
         </div>
       )}
 
-      {viewingActivity && <ActivityViewModal activity={viewingActivity} onClose={() => setViewingActivity(null)} />}
+      {currentViewingActivity && <ActivityViewModal activity={currentViewingActivity} onClose={() => setViewingActivity(null)} />}
     </div>
   );
 };
