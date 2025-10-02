@@ -180,6 +180,10 @@ button {
   top: 0;
 }
 
+.customer-table thead th[style*="cursor: pointer"]:hover {
+  background-color: var(--medium-gray);
+}
+
 .customer-table tbody tr:hover {
   background-color: var(--light-gray);
 }

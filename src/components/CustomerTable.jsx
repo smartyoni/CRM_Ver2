@@ -4,13 +4,42 @@ import { PROGRESS_STATUSES } from '../constants';
 const CustomerTable = ({ customers, onSelectCustomer, onEdit, onDelete, selectedCustomerId, activeFilter, activeProgressFilter, onProgressFilterChange, allCustomers }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedCustomer: null });
+  const [sortConfig, setSortConfig] = useState({ key: 'moveInDate', direction: 'asc' });
 
   const filteredCustomers = useMemo(() => {
-    return customers.filter(customer =>
+    let filtered = customers.filter(customer =>
       customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.phone.includes(searchTerm)
     );
-  }, [customers, searchTerm]);
+
+    // 정렬 적용
+    const sorted = [...filtered].sort((a, b) => {
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+
+      // null/undefined 처리
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      // 숫자 비교 (보증금, 월세)
+      if (sortConfig.key === 'hopefulDeposit' || sortConfig.key === 'hopefulMonthlyRent') {
+        const numA = Number(aValue) || 0;
+        const numB = Number(bValue) || 0;
+        return sortConfig.direction === 'asc' ? numA - numB : numB - numA;
+      }
+
+      // 문자열 비교 (고객명, 입주희망일)
+      const strA = String(aValue).toLowerCase();
+      const strB = String(bValue).toLowerCase();
+
+      if (strA < strB) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (strA > strB) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  }, [customers, searchTerm, sortConfig]);
 
   const handleContextMenu = (e, customer) => {
     e.preventDefault();
@@ -44,6 +73,20 @@ const CustomerTable = ({ customers, onSelectCustomer, onEdit, onDelete, selected
 
   // 진행상황 탭을 표시할지 여부
   const showProgressTabs = activeFilter === '신규' || activeFilter === '진행중';
+
+  // 정렬 핸들러
+  const handleSort = (key) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  // 정렬 아이콘 표시
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return ' ↕';
+    return sortConfig.direction === 'asc' ? ' ↑' : ' ↓';
+  };
 
   return (
     <div className="table-container" onClick={handleCloseContextMenu}>
@@ -81,12 +124,36 @@ const CustomerTable = ({ customers, onSelectCustomer, onEdit, onDelete, selected
           <tr>
             <th>#</th>
             <th>매물종류</th>
-            <th>고객명</th>
+            <th
+              onClick={() => handleSort('name')}
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              title="클릭하여 정렬"
+            >
+              고객명{getSortIcon('name')}
+            </th>
             <th>연락처</th>
-            <th>희망보증금</th>
-            <th>희망월세</th>
+            <th
+              onClick={() => handleSort('hopefulDeposit')}
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              title="클릭하여 정렬"
+            >
+              희망보증금{getSortIcon('hopefulDeposit')}
+            </th>
+            <th
+              onClick={() => handleSort('hopefulMonthlyRent')}
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              title="클릭하여 정렬"
+            >
+              희망월세{getSortIcon('hopefulMonthlyRent')}
+            </th>
             <th>선호지역</th>
-            <th>입주희망일</th>
+            <th
+              onClick={() => handleSort('moveInDate')}
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              title="클릭하여 정렬"
+            >
+              입주희망일{getSortIcon('moveInDate')}
+            </th>
             <th>상태</th>
           </tr>
         </thead>
