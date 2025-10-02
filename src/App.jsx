@@ -84,6 +84,10 @@ function App() {
   const handleOpenModal = (customer = null) => {
       setEditingCustomer(customer);
       setIsModalOpen(true);
+      // 모바일에서 detail panel 닫기
+      if (customer && customer.id === selectedCustomerId) {
+        setSelectedCustomerId(null);
+      }
   };
 
   const handleCloseModal = () => {
