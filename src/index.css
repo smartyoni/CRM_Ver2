@@ -346,12 +346,109 @@ button {
 .property-form-item { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
 .form-actions { display: flex; justify-content: flex-end; gap: 10px; }
 .meeting-item { background: #f9f9f9; border: 1px solid #eee; padding: 15px; border-radius: 5px; margin-bottom: 10px; }
-.property-item { border-left: 3px solid; padding: 10px; margin-top: 10px; }
-.property-item.status-확인전 { border-color: #f8d7da; background: #f8d7da20; }
-.property-item.status-확인중 { border-color: #fff3cd; background: #fff3cd20; }
-.property-item.status-볼수있음 { border-color: #d4edda; background: #d4edda20; }
-.property-item.status-오늘못봄 { border-color: #d1ecf1; background: #d1ecf120; }
-.property-item.status-계약됨 { border-color: #e2e3e5; background: #e2e3e520; }
+
+.meeting-properties-summary {
+  transition: all 0.2s;
+}
+
+.meeting-properties-summary:hover {
+  background: #e9ecef !important;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Property Card Styles */
+.property-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-top: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+
+.property-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.property-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.property-room-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.property-status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.property-status-badge.status-확인전 {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.property-status-badge.status-확인중 {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.property-status-badge.status-볼수있음 {
+  background: #d4edda;
+  color: #155724;
+}
+
+.property-status-badge.status-오늘못봄 {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.property-status-badge.status-계약됨 {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.property-card-body {
+  padding: 15px;
+}
+
+.property-info-label {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 8px;
+}
+
+.property-info-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #2c3e50;
+  white-space: pre-line;
+}
+
+.property-card-footer {
+  display: flex;
+  gap: 20px;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+}
+
+.property-detail {
+  font-size: 13px;
+  color: #555;
+}
 
 /* --- Responsive Design --- */
 @media (max-width: 1024px) {
