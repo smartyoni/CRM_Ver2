@@ -108,10 +108,6 @@ const CustomerModal = ({ isOpen, onClose, onSave, editData }) => {
                 <input type="date" name="moveInDate" value={formData.moveInDate} onChange={handleChange} />
             </div>
         </div>
-        <div className="form-group">
-            <label>선호지역</label>
-            <textarea name="preferredArea" value={formData.preferredArea} onChange={handleChange} rows="2"></textarea>
-        </div>
         <div className="form-grid">
             <div className="form-group">
                 <label>희망보증금 (만원)</label>
@@ -121,6 +117,10 @@ const CustomerModal = ({ isOpen, onClose, onSave, editData }) => {
                 <label>희망월세 (만원)</label>
                 <input type="number" name="hopefulMonthlyRent" value={formData.hopefulMonthlyRent} onChange={handleChange} />
             </div>
+        </div>
+        <div className="form-group">
+            <label>선호지역</label>
+            <textarea name="preferredArea" value={formData.preferredArea} onChange={handleChange} rows="2"></textarea>
         </div>
         <div className="form-group">
             <label>메모</label>
